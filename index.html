@@ -1,10 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>News</title>
+	<meta charset="UTF-8">
+	<title>News</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+	<aside>
+		<ul id="sources-list">
+		</ul>
+	</aside>
 
+	<main>
+		<h1 id="source-title"></h1>
+		<div class="articles-number-block">
+			<label for="articles-number">Article Number to Show: </label>
+			<select id="articles-number">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10" selected>10</option>
+			</select>
+		</div>
+		<div id="articles-list">
+		</div>
+		<div>Created using <a href="https://newsapi.org/" target="_blank">NewsAPI</a></div>
+	</main>
+
+	<script>
+	'use strict';
+
+	var currentSourceId = '';
+
+	var getArticleNumber = function() {
+		var selector = document.getElementById('articles-number');
+		var value = selector[selector.selectedIndex].value;
+		console.debug("Selected Article Number: " + value);
+		return value;
+	};
+
+	var onSourceClick = function(event) {
+		currentSourceId = event.target.id;
+		loadSource();
+	};
+
+	var getSourceUrl = function(sourceId) {
+		return `https://newsapi.org/v2/top-headlines?sources= +
+		${sourceId} +
+		&apiKey=2b17f156630a4c0caf074c1251e75c02`;
+	};
+
+	var loadSource = function() {
+		if (!currentSourceId) {
+			return;
+		}
+
+		console.debug("loadSource() called");
+		console.debug("Selected Source Id: " + currentSourceId);
+
+		var sourceUrl = getSourceUrl(currentSourceId);
+		var req = new Request(sourceUrl);
+		fetch(req)
+		.then(function(response) {
+			var articlesResult = response.json();
+
+			articlesResult.then(function(promiseValue) {
+				if (promiseValue && promiseValue.articles) {
+					let articlesList = "";
+					var articleNumber = getArticleNumber();
+
+					if (promiseValue.articles.length > 0 && promiseValue.articles[0].source) {
+						let sourceTitle = promiseValue.articles[0].source.name;
+						console.debug("Source Title to Show: " + sourceTitle);
+						document.getElementById('source-title').innerHTML = sourceTitle;
+					}
+
+					let length = promiseValue.articles.length > articleNumber ? articleNumber : promiseValue.articles.length;
+					console.debug("Article Number to Show: " + length);
+
+					for (let i = 0; i < length; i++) {
+						let article = promiseValue.articles[i]
+						articlesList += `<div class="article">
+						<h2><a href="${article.url}" target="_blank">${article.title}</a></h2>`;
+						if (article.publishedAt) {
+							let date = new Date(Date.parse(article.publishedAt));
+							articlesList += `<div class="date">Published: ${date}</div>`;
+						}
+						if (article.urlToImage) {
+							articlesList += `<img src="${article.urlToImage}" alt="">`;
+						}
+						if (article.content) {
+							articlesList += `<p>${article.content}</p>`;
+						} else if (article.description) {
+							articlesList += `<p>${article.description}</p>`;
+						}
+						articlesList += `</div>`;
+					}
+
+					document.getElementById('articles-list').innerHTML = articlesList;
+				}
+			});
+		})
+	}
+
+	document.getElementById('articles-number').addEventListener('change', loadSource);
+
+	var sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
+	var sourcesReq = new Request(sourcesUrl);
+
+	fetch(sourcesReq)
+	.then(function (sourcesResponse) {
+		var result = sourcesResponse.json();
+
+		result.then(function(promiseValue) {
+			if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0)
+			{
+				let list = "";
+				for (var i = 0; i < promiseValue.sources.length; i++) {
+					list += `<li id= ${promiseValue.sources[i].id}  >  ${promiseValue.sources[i].name}  </li>`;
+				}
+
+				document.getElementById('sources-list').innerHTML += list;
+
+				currentSourceId = promiseValue.sources[0].id;
+				loadSource();
+
+				var items = document.getElementById('sources-list').getElementsByTagName('li');
+
+				for (var i = 0; i < items.length; i++) {
+					items[i].addEventListener("click", onSourceClick);
+				}
+			}
+		});
+	});
+</script>
+
+<!--TODO: add an attribution link to NewsAPI-->
 </body>
 </html>
