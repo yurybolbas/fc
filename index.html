@@ -6,9 +6,10 @@
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-	<aside>
+	<aside id="side-block" class="collapsed">
 		<ul id="sources-list">
 		</ul>
+		<span class="expander" id="expander"></span>
 	</aside>
 
 	<main>
@@ -30,33 +31,34 @@
 		</div>
 		<div id="articles-list">
 		</div>
-		<div>Created using <a href="https://newsapi.org/" target="_blank">NewsAPI</a></div>
+		<div class="created">Created using <a href="https://newsapi.org/" target="_blank">NewsAPI</a></div>
 	</main>
 
-	<script>
+<script>
 	'use strict';
 
-	var currentSourceId = '';
+	let currentSourceId = '';
 
-	var getArticleNumber = function() {
-		var selector = document.getElementById('articles-number');
-		var value = selector[selector.selectedIndex].value;
+	let getArticleNumber = () => {
+		let selector = document.getElementById('articles-number');
+		let value = selector[selector.selectedIndex].value;
 		console.debug("Selected Article Number: " + value);
 		return value;
 	};
 
-	var onSourceClick = function(event) {
+	let onSourceClick = (event) => {
 		currentSourceId = event.target.id;
 		loadSource();
+		toggleExpander();
 	};
 
-	var getSourceUrl = function(sourceId) {
+	let getSourceUrl = (sourceId) => {
 		return `https://newsapi.org/v2/top-headlines?sources= +
-		${sourceId} +
-		&apiKey=2b17f156630a4c0caf074c1251e75c02`;
+			${sourceId} +
+			&apiKey=2b17f156630a4c0caf074c1251e75c02`;
 	};
 
-	var loadSource = function() {
+	let loadSource = () => {
 		if (!currentSourceId) {
 			return;
 		}
@@ -64,83 +66,93 @@
 		console.debug("loadSource() called");
 		console.debug("Selected Source Id: " + currentSourceId);
 
-		var sourceUrl = getSourceUrl(currentSourceId);
-		var req = new Request(sourceUrl);
+		let sourceUrl = getSourceUrl(currentSourceId);
+		let req = new Request(sourceUrl);
 		fetch(req)
-		.then(function(response) {
-			var articlesResult = response.json();
+			.then((response) => {
+				let articlesResult = response.json();
 
-			articlesResult.then(function(promiseValue) {
-				if (promiseValue && promiseValue.articles) {
-					let articlesList = "";
-					var articleNumber = getArticleNumber();
+				articlesResult.then((promiseValue) => {
+					if (promiseValue && promiseValue.articles) {
+						let articlesList = "";
+						let articleNumber = getArticleNumber();
 
-					if (promiseValue.articles.length > 0 && promiseValue.articles[0].source) {
-						let sourceTitle = promiseValue.articles[0].source.name;
-						console.debug("Source Title to Show: " + sourceTitle);
-						document.getElementById('source-title').innerHTML = sourceTitle;
+						if (promiseValue.articles.length > 0 && promiseValue.articles[0].source) {
+							let sourceTitle = promiseValue.articles[0].source.name;
+							console.debug("Source Title to Show: " + sourceTitle);
+							document.getElementById('source-title').innerHTML = sourceTitle;
+						}
+
+						let length = promiseValue.articles.length > articleNumber ? articleNumber : promiseValue.articles.length;
+						console.debug("Article Number to Show: " + length);
+
+						for (let i = 0; i < length; i++) {
+							let article = promiseValue.articles[i];
+							articlesList += `<div class="article">
+							<h2><a href="${article.url}" target="_blank">${article.title}</a></h2>`;
+							if (article.publishedAt) {
+								let date = new Date(Date.parse(article.publishedAt));
+								articlesList += `<div class="date">Published: ${date}</div>`;
+							}
+							if (article.urlToImage) {
+								articlesList += `<img src="${article.urlToImage}" alt="">`;
+							}
+							if (article.content) {
+								articlesList += `<p>${article.content}</p>`;
+							} else if (article.description) {
+								articlesList += `<p>${article.description}</p>`;
+							}
+							articlesList += `</div>`;
+						}
+
+						document.getElementById('articles-list').innerHTML = articlesList;
 					}
-
-					let length = promiseValue.articles.length > articleNumber ? articleNumber : promiseValue.articles.length;
-					console.debug("Article Number to Show: " + length);
-
-					for (let i = 0; i < length; i++) {
-						let article = promiseValue.articles[i]
-						articlesList += `<div class="article">
-						<h2><a href="${article.url}" target="_blank">${article.title}</a></h2>`;
-						if (article.publishedAt) {
-							let date = new Date(Date.parse(article.publishedAt));
-							articlesList += `<div class="date">Published: ${date}</div>`;
-						}
-						if (article.urlToImage) {
-							articlesList += `<img src="${article.urlToImage}" alt="">`;
-						}
-						if (article.content) {
-							articlesList += `<p>${article.content}</p>`;
-						} else if (article.description) {
-							articlesList += `<p>${article.description}</p>`;
-						}
-						articlesList += `</div>`;
-					}
-
-					document.getElementById('articles-list').innerHTML = articlesList;
-				}
-			});
-		})
-	}
+				});
+			})
+	};
 
 	document.getElementById('articles-number').addEventListener('change', loadSource);
 
-	var sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
-	var sourcesReq = new Request(sourcesUrl);
+	const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
+	const sourcesReq = new Request(sourcesUrl);
 
 	fetch(sourcesReq)
-	.then(function (sourcesResponse) {
-		var result = sourcesResponse.json();
+		.then((sourcesResponse) => {
+			let result = sourcesResponse.json();
 
-		result.then(function(promiseValue) {
-			if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0)
-			{
-				let list = "";
-				for (var i = 0; i < promiseValue.sources.length; i++) {
-					list += `<li id= ${promiseValue.sources[i].id}  >  ${promiseValue.sources[i].name}  </li>`;
+			result.then((promiseValue) => {
+				if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
+					let list = "";
+					for (let i = 0; i < promiseValue.sources.length; i++) {
+						list += `<li id= ${promiseValue.sources[i].id}  >  ${promiseValue.sources[i].name}  </li>`;
+					}
+
+					document.getElementById('sources-list').innerHTML += list;
+
+					currentSourceId = promiseValue.sources[0].id;
+					loadSource();
+
+					let items = document.getElementById('sources-list').getElementsByTagName('li');
+
+					for (let i = 0; i < items.length; i++) {
+						items[i].addEventListener("click", onSourceClick);
+					}
 				}
-
-				document.getElementById('sources-list').innerHTML += list;
-
-				currentSourceId = promiseValue.sources[0].id;
-				loadSource();
-
-				var items = document.getElementById('sources-list').getElementsByTagName('li');
-
-				for (var i = 0; i < items.length; i++) {
-					items[i].addEventListener("click", onSourceClick);
-				}
-			}
+			});
 		});
-	});
+
+	const toggleExpander = () => {
+		let sideBlock = document.getElementById('side-block');
+		let sideBlockClass = sideBlock.getAttribute('class');
+		if (sideBlockClass === 'collapsed') {
+			sideBlock.removeAttribute('class')
+		} else {
+			sideBlock.setAttribute('class', 'collapsed')
+		}
+	};
+	document.getElementById('expander').addEventListener("click", toggleExpander);
+
 </script>
 
-<!--TODO: add an attribution link to NewsAPI-->
 </body>
 </html>
