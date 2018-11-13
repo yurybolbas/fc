@@ -110,6 +110,7 @@
 					}
 				});
 			})
+			.catch(() => console.error(`Response Error from: ${currentSourceId}`));
 	};
 
 	document.getElementById('articles-number').addEventListener('change', loadSource);
@@ -140,7 +141,8 @@
 					}
 				}
 			});
-		});
+		})
+		.catch(() => console.error(`Response Error from: ${sourcesUrl}`));
 
 	const toggleExpander = () => {
 		let sideBlock = document.getElementById('side-block');
