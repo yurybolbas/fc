@@ -37,7 +37,7 @@
 
 <script type="module">
 	'use strict';
-	import { renderArticles, getArticleNumber, toggleExpander } from './modules.js';
+	import { renderArticles, getArticleNumber, toggleExpander, getSourceUrl } from './modules.js';
 
 	let currentSourceId = '';
 
@@ -45,12 +45,6 @@
 		currentSourceId = event.target.id;
 		loadSource();
 		toggleExpander();
-	};
-
-	let getSourceUrl = (sourceId) => {
-		return `https://newsapi.org/v2/top-headlines?sources= +
-			${sourceId} +
-			&apiKey=2b17f156630a4c0caf074c1251e75c02`;
 	};
 
 	let loadSource = () => {
@@ -83,8 +77,8 @@
 			result.then((promiseValue) => {
 				if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
 					let list = "";
-					for (let i = 0; i < promiseValue.sources.length; i++) {
-						list += `<li id= ${promiseValue.sources[i].id}  >  ${promiseValue.sources[i].name}  </li>`;
+					for (let source of promiseValue.sources) {
+						list += `<li id= ${source.id}  >  ${source.name}  </li>`;
 					}
 
 					document.getElementById('sources-list').innerHTML += list;
@@ -94,8 +88,8 @@
 
 					let items = document.getElementById('sources-list').getElementsByTagName('li');
 
-					for (let i = 0; i < items.length; i++) {
-						items[i].addEventListener("click", onSourceClick);
+					for (let item of items) {
+						item.addEventListener("click", onSourceClick);
 					}
 				}
 			});
