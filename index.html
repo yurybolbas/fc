@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>News</title>
 	<link rel="stylesheet" href="styles.css">
+	<script src="//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
 </head>
 <body>
 	<aside id="side-block" class="collapsed">
@@ -35,70 +37,6 @@
 		<div class="created">Created using <a href="https://newsapi.org/" target="_blank">NewsAPI</a></div>
 	</main>
 
-<script type="module">
-	'use strict';
-	import { renderArticles, getArticleNumber, toggleExpander, getSourceUrl } from './modules.js';
-
-	let currentSourceId = '';
-
-	let onSourceClick = (event) => {
-		currentSourceId = event.target.id;
-		loadSource();
-		toggleExpander();
-	};
-
-	let loadSource = () => {
-		if (!currentSourceId) {
-			return;
-		}
-
-		console.debug("loadSource() called");
-		console.debug("Selected Source Id: " + currentSourceId);
-
-		let sourceUrl = getSourceUrl(currentSourceId);
-		let req = new Request(sourceUrl);
-		fetch(req)
-			.then((response) => {
-				let articlesResult = response.json();
-				articlesResult.then(renderArticles);
-			})
-			.catch(() => console.error(`Response Error from: ${currentSourceId}`));
-	};
-
-	document.getElementById('articles-number').addEventListener('change', loadSource);
-
-	const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
-	const sourcesReq = new Request(sourcesUrl);
-
-	fetch(sourcesReq)
-		.then((sourcesResponse) => {
-			let result = sourcesResponse.json();
-
-			result.then((promiseValue) => {
-				if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
-					let list = "";
-					for (let source of promiseValue.sources) {
-						list += `<li id= ${source.id}  >  ${source.name}  </li>`;
-					}
-
-					document.getElementById('sources-list').innerHTML += list;
-
-					currentSourceId = promiseValue.sources[0].id;
-					loadSource();
-
-					let items = document.getElementById('sources-list').getElementsByTagName('li');
-
-					for (let item of items) {
-						item.addEventListener("click", onSourceClick);
-					}
-				}
-			});
-		})
-		.catch(() => console.error(`Response Error from: ${sourcesUrl}`));
-
-	document.getElementById('expander').addEventListener("click", toggleExpander);
-
-</script>
-
+	<script src="app/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,21 @@
+{
+  "name": "yurybolbas-fc.github.io",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "babel src -d app",
+    "watch": "babel src --watch -d app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yurybolbas/yurybolbas-fc.github.io.git"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-transform-typeof-symbol": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
+    "babel-plugin-transform-es2015-typeof-symbol": "^6.23.0"
+  },
+  "dependencies": {}
+}
