@@ -72,7 +72,7 @@ let onSourceClick = (event) => {
 	toggleExpander();
 };
 
-let loadSource = () => {
+let loadSource = async () => {
 	if (!currentSourceId) {
 		return;
 	}
@@ -82,7 +82,7 @@ let loadSource = () => {
 
 	let sourceUrl = getSourceUrl(currentSourceId);
 	let req = new Request(sourceUrl);
-	fetch(req)
+	await fetch(req)
 		.then((response) => {
 			let articlesResult = response.json();
 			articlesResult.then(renderArticles);
@@ -95,29 +95,30 @@ document.getElementById('articles-number').addEventListener('change', loadSource
 const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
 const sourcesReq = new Request(sourcesUrl);
 
-fetch(sourcesReq)
-	.then((sourcesResponse) => {
-		let result = sourcesResponse.json();
-		console.log(result);
-		result.then((promiseValue) => {
-			if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
-				let list = "";
-				for (let source of promiseValue.sources) {
-					list += `<li id= ${source.id}  >  ${source.name}  </li>`;
+(async () => {
+	await fetch(sourcesReq)
+		.then((sourcesResponse) => {
+			let result = sourcesResponse.json();
+			console.log(result);
+			result.then((promiseValue) => {
+				if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
+					let list = "";
+					for (let source of promiseValue.sources) {
+						list += `<li id= ${source.id}  >  ${source.name}  </li>`;
+					}
+
+					document.getElementById('sources-list').innerHTML += list;
+
+					currentSourceId = promiseValue.sources[0].id;
+					loadSource();
+
+					let itemsList = document.getElementById('sources-list');
+					itemsList.addEventListener("click", onSourceClick);
+
 				}
-
-				document.getElementById('sources-list').innerHTML += list;
-
-				currentSourceId = promiseValue.sources[0].id;
-				loadSource();
-
-				let items = document.getElementById('sources-list').getElementsByTagName('li');
-				let itemsList = document.getElementById('sources-list');
-				itemsList.addEventListener("click", onSourceClick);
-
-			}
-		});
-	})
-	.catch(() => console.error(`Response Error from: ${sourcesUrl}`));
+			});
+		})
+		.catch(() => console.error(`Response Error from: ${sourcesUrl}`));
+})();
 
 document.getElementById('expander').addEventListener("click", toggleExpander);
