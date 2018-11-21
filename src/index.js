@@ -82,12 +82,13 @@ let loadSource = async () => {
 
 	let sourceUrl = getSourceUrl(currentSourceId);
 	let req = new Request(sourceUrl);
-	await fetch(req)
-		.then((response) => {
-			let articlesResult = response.json();
-			articlesResult.then(renderArticles);
-		})
-		.catch(() => console.error(`Response Error from: ${currentSourceId}`));
+	try {
+		let sourceResponse = await fetch(req);
+		let articlesResult = sourceResponse.json();
+		articlesResult.then(renderArticles);
+	} catch(e) {
+		console.error(e);
+	}
 };
 
 document.getElementById('articles-number').addEventListener('change', loadSource);
@@ -96,29 +97,30 @@ const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c
 const sourcesReq = new Request(sourcesUrl);
 
 (async () => {
-	await fetch(sourcesReq)
-		.then((sourcesResponse) => {
-			let result = sourcesResponse.json();
-			console.log(result);
-			result.then((promiseValue) => {
-				if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
-					let list = "";
-					for (let source of promiseValue.sources) {
-						list += `<li id= ${source.id}  >  ${source.name}  </li>`;
-					}
-
-					document.getElementById('sources-list').innerHTML += list;
-
-					currentSourceId = promiseValue.sources[0].id;
-					loadSource();
-
-					let itemsList = document.getElementById('sources-list');
-					itemsList.addEventListener("click", onSourceClick);
-
+	try {
+		let sourcesResponse = await fetch(sourcesReq);
+		let result = sourcesResponse.json();
+		console.log(result);
+		result.then((promiseValue) => {
+			if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
+				let list = "";
+				for (let source of promiseValue.sources) {
+					list += `<li id= ${source.id}  >  ${source.name}  </li>`;
 				}
-			});
-		})
-		.catch(() => console.error(`Response Error from: ${sourcesUrl}`));
+
+				document.getElementById('sources-list').innerHTML += list;
+
+				currentSourceId = promiseValue.sources[0].id;
+				loadSource();
+
+				let itemsList = document.getElementById('sources-list');
+				itemsList.addEventListener("click", onSourceClick);
+
+			}
+		});
+	} catch (e) {
+		console.error(e);
+	}
 })();
 
 document.getElementById('expander').addEventListener("click", toggleExpander);

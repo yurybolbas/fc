@@ -86,7 +86,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee() {
-    var sourceUrl, req;
+    var sourceUrl, req, sourceResponse, articlesResult;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -103,20 +103,28 @@ function () {
             console.debug("Selected Source Id: " + currentSourceId);
             sourceUrl = getSourceUrl(currentSourceId);
             req = new Request(sourceUrl);
-            _context.next = 8;
-            return fetch(req).then(function (response) {
-              var articlesResult = response.json();
-              articlesResult.then(renderArticles);
-            }).catch(function () {
-              return console.error("Response Error from: ".concat(currentSourceId));
-            });
+            _context.prev = 6;
+            _context.next = 9;
+            return fetch(req);
 
-          case 8:
+          case 9:
+            sourceResponse = _context.sent;
+            articlesResult = sourceResponse.json();
+            articlesResult.then(renderArticles);
+            _context.next = 17;
+            break;
+
+          case 14:
+            _context.prev = 14;
+            _context.t0 = _context["catch"](6);
+            console.error(_context.t0);
+
+          case 17:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee, this, [[6, 14]]);
   }));
 
   return function loadSource() {
@@ -131,58 +139,67 @@ var sourcesReq = new Request(sourcesUrl);
 _asyncToGenerator(
 /*#__PURE__*/
 regeneratorRuntime.mark(function _callee2() {
+  var sourcesResponse, result;
   return regeneratorRuntime.wrap(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.next = 2;
-          return fetch(sourcesReq).then(function (sourcesResponse) {
-            var result = sourcesResponse.json();
-            console.log(result);
-            result.then(function (promiseValue) {
-              if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
-                var list = "";
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+          _context2.prev = 0;
+          _context2.next = 3;
+          return fetch(sourcesReq);
 
+        case 3:
+          sourcesResponse = _context2.sent;
+          result = sourcesResponse.json();
+          console.log(result);
+          result.then(function (promiseValue) {
+            if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
+              var list = "";
+              var _iteratorNormalCompletion = true;
+              var _didIteratorError = false;
+              var _iteratorError = undefined;
+
+              try {
+                for (var _iterator = promiseValue.sources[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  var source = _step.value;
+                  list += "<li id= ".concat(source.id, "  >  ").concat(source.name, "  </li>");
+                }
+              } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+              } finally {
                 try {
-                  for (var _iterator = promiseValue.sources[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var source = _step.value;
-                    list += "<li id= ".concat(source.id, "  >  ").concat(source.name, "  </li>");
+                  if (!_iteratorNormalCompletion && _iterator.return != null) {
+                    _iterator.return();
                   }
-                } catch (err) {
-                  _didIteratorError = true;
-                  _iteratorError = err;
                 } finally {
-                  try {
-                    if (!_iteratorNormalCompletion && _iterator.return != null) {
-                      _iterator.return();
-                    }
-                  } finally {
-                    if (_didIteratorError) {
-                      throw _iteratorError;
-                    }
+                  if (_didIteratorError) {
+                    throw _iteratorError;
                   }
                 }
-
-                document.getElementById('sources-list').innerHTML += list;
-                currentSourceId = promiseValue.sources[0].id;
-                loadSource();
-                var itemsList = document.getElementById('sources-list');
-                itemsList.addEventListener("click", onSourceClick);
               }
-            });
-          }).catch(function () {
-            return console.error("Response Error from: ".concat(sourcesUrl));
-          });
 
-        case 2:
+              document.getElementById('sources-list').innerHTML += list;
+              currentSourceId = promiseValue.sources[0].id;
+              loadSource();
+              var itemsList = document.getElementById('sources-list');
+              itemsList.addEventListener("click", onSourceClick);
+            }
+          });
+          _context2.next = 12;
+          break;
+
+        case 9:
+          _context2.prev = 9;
+          _context2.t0 = _context2["catch"](0);
+          console.error(_context2.t0);
+
+        case 12:
         case "end":
           return _context2.stop();
       }
     }
-  }, _callee2, this);
+  }, _callee2, this, [[0, 9]]);
 }))();
 
 document.getElementById('expander').addEventListener("click", toggleExpander);
