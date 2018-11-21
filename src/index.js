@@ -1,6 +1,6 @@
 'use strict';
 
-export let renderArticles = (promiseValue) => {
+let renderArticles = (promiseValue) => {
 	if (promiseValue && promiseValue.articles) {
 		let articlesList = "";
 		let articleNumber = getArticleNumber();
@@ -37,14 +37,14 @@ export let renderArticles = (promiseValue) => {
 	}
 };
 
-export let getArticleNumber = () => {
+let getArticleNumber = () => {
 	let selector = document.getElementById('articles-number');
 	let value = selector[selector.selectedIndex].value;
 	console.debug("Selected Article Number: " + value);
 	return value;
 };
 
-export const toggleExpander = () => {
+const toggleExpander = () => {
 	let sideBlock = document.getElementById('side-block');
 	let sideBlockClass = sideBlock.getAttribute('class');
 	if (sideBlockClass === 'collapsed') {
@@ -54,8 +54,73 @@ export const toggleExpander = () => {
 	}
 };
 
-export const getSourceUrl = (sourceId) => {
+const getSourceUrl = (sourceId) => {
 	return `https://newsapi.org/v2/top-headlines?sources= +
 			${sourceId} +
 			&apiKey=2b17f156630a4c0caf074c1251e75c02`;
 };
+
+let currentSourceId = '';
+
+let onSourceClick = (event) => {
+	console.log(`Old SourceId: ${currentSourceId}`);
+	if (event.target.id !== 'sources-list') {
+		currentSourceId = event.target.id;
+	}
+	console.log(`New SourceId: ${currentSourceId}`);
+	loadSource();
+	toggleExpander();
+};
+
+let loadSource = async () => {
+	if (!currentSourceId) {
+		return;
+	}
+
+	console.debug("loadSource() called");
+	console.debug("Selected Source Id: " + currentSourceId);
+
+	let sourceUrl = getSourceUrl(currentSourceId);
+	let req = new Request(sourceUrl);
+	try {
+		let sourceResponse = await fetch(req);
+		let articlesResult = sourceResponse.json();
+		articlesResult.then(renderArticles);
+	} catch(e) {
+		console.error(e);
+	}
+};
+
+document.getElementById('articles-number').addEventListener('change', loadSource);
+
+const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
+const sourcesReq = new Request(sourcesUrl);
+
+(async () => {
+	try {
+		let sourcesResponse = await fetch(sourcesReq);
+		let result = sourcesResponse.json();
+		console.log(result);
+		result.then((promiseValue) => {
+			if (promiseValue && promiseValue.sources && promiseValue.sources.length > 0) {
+				let list = "";
+				for (let source of promiseValue.sources) {
+					list += `<li id= ${source.id}  >  ${source.name}  </li>`;
+				}
+
+				document.getElementById('sources-list').innerHTML += list;
+
+				currentSourceId = promiseValue.sources[0].id;
+				loadSource();
+
+				let itemsList = document.getElementById('sources-list');
+				itemsList.addEventListener("click", onSourceClick);
+
+			}
+		});
+	} catch (e) {
+		console.error(e);
+	}
+})();
+
+document.getElementById('expander').addEventListener("click", toggleExpander);
