@@ -2,9 +2,8 @@
   "name": "yurybolbas-fc.github.io",
   "version": "1.0.0",
   "scripts": {
-    "dev": "webpack --mode development",
-    "prod": "webpack --mode production",
-    "start": "webpack-dev-server --mode development --hot --colors --progress"
+    "prod": "webpack --mode production --config prod.config.js",
+    "start": "webpack-dev-server --mode development --config dev.config.js"
   },
   "repository": {
     "type": "git",
@@ -18,10 +17,13 @@
     "@babel/preset-env": "^7.1.6",
     "babel-loader": "^8.0.4",
     "babel-plugin-transform-es2015-typeof-symbol": "^6.23.0",
+    "clean-webpack-plugin": "^1.0.0",
     "css-loader": "^1.0.1",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "cssnano": "^4.1.7",
     "mini-css-extract-plugin": "^0.4.5",
     "node-sass": "^4.10.0",
+    "postcss-import": "^12.0.1",
+    "postcss-preset-env": "^6.4.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.26.0",
