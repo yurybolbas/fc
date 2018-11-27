@@ -1,7 +1,8 @@
 'use strict';
-import { renderArticles } from './modules/renderArticles.js';
-import { toggleExpander } from './modules/toggleExpander.js';
-import { getSourceUrl } from './modules/getSourceUrl.js';
+import {renderArticles} from './modules/renderArticles.js';
+import {renderSourceName} from './modules/renderSourceName.js';
+import {toggleExpander} from './modules/toggleExpander.js';
+import {getSourceUrl} from './modules/getSourceUrl.js';
 
 let currentSourceId = '';
 
@@ -11,11 +12,11 @@ let onSourceClick = (event) => {
 		currentSourceId = event.target.id;
 	}
 	console.log(`New SourceId: ${currentSourceId}`);
-	loadSource();
+	loadSource(renderSourceName);
 	toggleExpander();
 };
 
-let loadSource = async () => {
+let loadSource = async (sourceToLoad) => {
 	if (!currentSourceId) {
 		return;
 	}
@@ -28,10 +29,14 @@ let loadSource = async () => {
 	try {
 		let sourceResponse = await fetch(req);
 		let articlesResult = sourceResponse.json();
-		articlesResult.then(renderArticles);
-	} catch(e) {
+		articlesResult.then(sourceToLoad);
+	} catch (e) {
 		console.error(e);
 	}
+};
+
+let renderArticlesContent = () => {
+	loadSource(renderArticles)
 };
 
 document.getElementById('articles-number').addEventListener('change', loadSource);
@@ -54,7 +59,7 @@ const sourcesReq = new Request(sourcesUrl);
 				document.getElementById('sources-list').innerHTML += list;
 
 				currentSourceId = promiseValue.sources[0].id;
-				loadSource();
+				loadSource(renderSourceName);
 
 				let itemsList = document.getElementById('sources-list');
 				itemsList.addEventListener("click", onSourceClick);
@@ -67,3 +72,4 @@ const sourcesReq = new Request(sourcesUrl);
 })();
 
 document.getElementById('expander').addEventListener("click", toggleExpander);
+document.getElementById('show-articles').addEventListener("click", renderArticlesContent);

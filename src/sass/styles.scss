@@ -46,6 +46,9 @@ main {
 }
 .articles-number-block {
   padding: 0 1rem 1rem;
+	button {
+		cursor: pointer;
+	}
 }
 h1 {
   font-size: 3em;
