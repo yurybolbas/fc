@@ -1,6 +1,4 @@
 'use strict';
-import {renderArticles} from './modules/renderArticles.js';
-import {renderSourceName} from './modules/renderSourceName.js';
 import {toggleExpander} from './modules/toggleExpander.js';
 import {getSourceUrl} from './modules/getSourceUrl.js';
 
@@ -12,7 +10,10 @@ let onSourceClick = (event) => {
 		currentSourceId = event.target.id;
 	}
 	console.log(`New SourceId: ${currentSourceId}`);
-	loadSource(renderSourceName);
+	import('./modules/renderSourceName.js').then((renderSourceName) => {
+			loadSource(renderSourceName.renderSourceName)
+		}
+	);
 	toggleExpander();
 };
 
@@ -36,7 +37,10 @@ let loadSource = async (sourceToLoad) => {
 };
 
 let renderArticlesContent = () => {
-	loadSource(renderArticles)
+	import('./modules/renderArticles.js').then((renderArticles) => {
+			loadSource(renderArticles.renderArticles)
+		}
+	);
 };
 
 document.getElementById('articles-number').addEventListener('change', loadSource);
@@ -59,7 +63,9 @@ const sourcesReq = new Request(sourcesUrl);
 				document.getElementById('sources-list').innerHTML += list;
 
 				currentSourceId = promiseValue.sources[0].id;
-				loadSource(renderSourceName);
+				import('./modules/renderSourceName.js').then((renderSourceName) =>
+						loadSource(renderSourceName.renderSourceName)
+				);
 
 				let itemsList = document.getElementById('sources-list');
 				itemsList.addEventListener("click", onSourceClick);
