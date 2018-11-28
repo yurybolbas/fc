@@ -1,4 +1,4 @@
 {
 	"presets": ["@babel/preset-env"],
-	"plugins": ["@babel/plugin-transform-typeof-symbol", "babel-plugin-transform-es2015-typeof-symbol"]
+	"plugins": ["@babel/plugin-transform-typeof-symbol", "babel-plugin-transform-es2015-typeof-symbol", "@babel/plugin-syntax-dynamic-import"]
 }

@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[0],{333:function(e,n,t){"use strict";t.r(n),t.d(n,"renderSourceName",function(){return r});var r=function(e){if(e&&e.articles&&(document.getElementById("articles-list").innerHTML="",e.articles.length>0&&e.articles[0].source)){var n=e.articles[0].source.name;console.debug("Source Title to Show: "+n),document.getElementById("source-title").innerHTML=n}}}}]);
+//# sourceMappingURL=0.js.map
