@@ -5,6 +5,7 @@
     "prod": "webpack --mode production --config prod.config.js",
     "start": "webpack-dev-server --mode development --config dev.config.js"
   },
+  "homepage": "https://yurybolbas.github.io/fc/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yurybolbas/yurybolbas-fc.github.io.git"
