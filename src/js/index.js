@@ -1,7 +1,6 @@
 'use strict';
 import {toggleExpander} from './modules/toggleExpander.js';
 import {getSourceUrl} from './modules/getSourceUrl.js';
-import {errorPopup} from "./modules/errorHandler";
 
 let currentSourceId = '';
 
@@ -34,7 +33,10 @@ let loadSource = async (sourceToLoad) => {
 		articlesResult.then(sourceToLoad);
 	} catch (e) {
 		console.error(e);
-		errorPopup(e);
+		import('./modules/errorHandler.js').then((errorHandler) => {
+				errorHandler.errorPopup(e)
+			}
+		);
 	}
 };
 
@@ -76,6 +78,10 @@ const sourcesReq = new Request(sourcesUrl);
 		});
 	} catch (e) {
 		console.error(e);
+		import('./modules/errorHandler.js').then((errorHandler) => {
+				errorHandler.errorPopup(e)
+			}
+		);
 	}
 })();
 
