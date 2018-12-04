@@ -34,7 +34,7 @@ let loadSource = async (sourceToLoad) => {
 	} catch (e) {
 		console.error(e);
 		import('./modules/errorHandler.js').then((errorHandler) => {
-				errorHandler.errorPopup(e)
+				errorHandler.Modal.getInstance().getModal(e)
 			}
 		);
 	}
@@ -79,7 +79,7 @@ const sourcesReq = new Request(sourcesUrl);
 	} catch (e) {
 		console.error(e);
 		import('./modules/errorHandler.js').then((errorHandler) => {
-				errorHandler.errorPopup(e)
+				errorHandler.Modal.getInstance().getModal(e)
 			}
 		);
 	}
