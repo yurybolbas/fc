@@ -1,6 +1,6 @@
 'use strict';
 import {toggleExpander} from './modules/toggleExpander.js';
-import {getSourceUrl} from './modules/getSourceUrl.js';
+import {requestService} from './modules/requestFactory.js';
 
 let currentSourceId = '';
 
@@ -25,14 +25,16 @@ let loadSource = async (sourceToLoad) => {
 	console.debug("loadSource() called");
 	console.debug("Selected Source Id: " + currentSourceId);
 
-	let sourceUrl = getSourceUrl(currentSourceId);
-	let req = new Request(sourceUrl);
 	try {
-		let sourceResponse = await fetch(req);
+		let sourceResponse = await new requestService('sourceUrl', currentSourceId);
 		let articlesResult = sourceResponse.json();
 		articlesResult.then(sourceToLoad);
 	} catch (e) {
 		console.error(e);
+		import('./modules/errorHandler.js').then((errorHandler) => {
+				errorHandler.Modal.getInstance().getModal(e)
+			}
+		);
 	}
 };
 
@@ -45,12 +47,9 @@ let renderArticlesContent = () => {
 
 document.getElementById('articles-number').addEventListener('change', loadSource);
 
-const sourcesUrl = "https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02";
-const sourcesReq = new Request(sourcesUrl);
-
 (async () => {
 	try {
-		let sourcesResponse = await fetch(sourcesReq);
+		let sourcesResponse = await new requestService('sourcesUrl');
 		let result = sourcesResponse.json();
 		console.log(result);
 		result.then((promiseValue) => {
@@ -74,6 +73,10 @@ const sourcesReq = new Request(sourcesUrl);
 		});
 	} catch (e) {
 		console.error(e);
+		import('./modules/errorHandler.js').then((errorHandler) => {
+				errorHandler.Modal.getInstance().getModal(e)
+			}
+		);
 	}
 })();
 
