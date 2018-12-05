@@ -25,9 +25,8 @@ let loadSource = async (sourceToLoad) => {
 	console.debug("loadSource() called");
 	console.debug("Selected Source Id: " + currentSourceId);
 
-	let req = new requestService('sourceUrl', currentSourceId);
 	try {
-		let sourceResponse = await fetch(req);
+		let sourceResponse = await new requestService('sourceUrl', currentSourceId);
 		let articlesResult = sourceResponse.json();
 		articlesResult.then(sourceToLoad);
 	} catch (e) {
@@ -48,11 +47,9 @@ let renderArticlesContent = () => {
 
 document.getElementById('articles-number').addEventListener('change', loadSource);
 
-const sourcesReq = new requestService('sourcesUrl');
-
 (async () => {
 	try {
-		let sourcesResponse = await fetch(sourcesReq);
+		let sourcesResponse = await new requestService('sourcesUrl');
 		let result = sourcesResponse.json();
 		console.log(result);
 		result.then((promiseValue) => {

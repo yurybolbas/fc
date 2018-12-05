@@ -12,6 +12,6 @@ export const requestService = (type, id) => {
 		requestUrl = 'https://newsapi.org/v2/sources?apiKey=2b17f156630a4c0caf074c1251e75c02';
 		console.log('All sources requested')
 	}
-	return new Request(requestUrl)
+	return fetch(new Request(requestUrl));
 };
 
